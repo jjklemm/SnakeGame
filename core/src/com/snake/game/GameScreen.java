@@ -26,8 +26,9 @@ public class GameScreen implements Screen {
 	//Music rainMusic;
 	OrthographicCamera camera;
 	Rectangle pellet;
-	Array<Rectangle> snakes;
+	ArrayList<Rectangle> snakes = new ArrayList<>();
 	int pelletsGathered;
+    int snakeLength;
 
     final int PELLET_SIZE = 32;
     final int SNAKE_SIZE = 32;
@@ -64,6 +65,7 @@ public class GameScreen implements Screen {
         snake.width = SNAKE_SIZE;
         snake.height = SNAKE_SIZE;
         snakes.add(snake);
+        snakeLength = 1;
 
 	}
 
