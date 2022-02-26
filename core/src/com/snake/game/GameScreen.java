@@ -26,12 +26,18 @@ public class GameScreen implements Screen {
 	//Music rainMusic;
 	OrthographicCamera camera;
 	Rectangle pellet;
-	ArrayList<Rectangle> snakes = new ArrayList<>();
 	int pelletsGathered;
     int snakeLength;
 
-    final int PELLET_SIZE = 32;
-    final int SNAKE_SIZE = 32;
+    final int PELLET_SIZE = 4;
+    final int SNAKE_SIZE = 4;
+    final int WINDOW_LENGTH = 800;
+    final int WINDOW_HEIGHT = 480;
+    final int SNAKE_SPEED = 200;
+    final int MOVE_LEFT = 0;
+    final int MOVE_RIGHT = 1;
+    final int MOVE_UP = 2;
+    final int MOVE_DOWN = 3;
 
 	public GameScreen(final Snake gam) {
 		this.game = gam;
@@ -47,21 +53,21 @@ public class GameScreen implements Screen {
 
 		// create the camera and the SpriteBatch
 		camera = new OrthographicCamera();
-		camera.setToOrtho(false, 800, 480);
+		camera.setToOrtho(false, WINDOW_LENGTH, WINDOW_HEIGHT);
 
 		// create a Rectangle to logically represent the pellet 
 		pellet = new Rectangle();
-		pellet.x = MathUtils.random(0,800 - PELLET_SIZE); // center the bucket horizontally
-		pellet.y = MathUtils.random(0,480 - PELLET_SIZE; // bottom left corner of the bucket is 20 pixels above
+		pellet.x = MathUtils.random(0,WINDOW_LENGTH - PELLET_SIZE); // center the bucket horizontally
+		pellet.y = MathUtils.random(0,WINDOW_HEIGHT - PELLET_SIZE; // bottom left corner of the bucket is 20 pixels above
 						// the bottom screen edge
 		pellet.width = PELLET_SIZE;
 		pellet.height = PELLET_SIZE;
 
 		// Create first snake pixel
-		snakes = new Array<Rectangle>();
+		ArrayList<Rectangle> snakes = new ArrayList<>();
         Rectangle snake = new Rectangle();
-        snake.x = 800 / 2;
-        snake.y = 480 / 2;
+        snake.x = WINDOW_LENGTH / 2;
+        snake.y = WINDOW_HEIGHT / 2;
         snake.width = SNAKE_SIZE;
         snake.height = SNAKE_SIZE;
         snakes.add(snake);
@@ -69,20 +75,33 @@ public class GameScreen implements Screen {
 
 	}
 
-    private void moveSnakeX(float delta) {
-        // need each pixel to take position of pixel that is one position ahead
-        Iterator<Rectangle> iter = snakes.iterator();
-	    while (iter.hasNext()) {
-		    Rectangle snake = iter.next();
-		    snake.x -= 200 * Gdx.graphics.getDeltaTime();
-		    if (raindrop.y + 64 < 0)
-		        iter.remove();
-		    if (raindrop.overlaps(bucket)) {
-			    dropsGathered++;
-			    dropSound.play();
-			    iter.remove();
-		    }
-	    }
+    private void moveSnake(int move) {
+        // add new snake position
+        Rectangle snakePosition = (Rectangle) snakes.get(0);
+        Rectangle snake = new Rectangle();
+        switch (move) {
+            case MOVE_RIGHT:
+                snake.x = snakePosition.x + SNAKE_SIZE;
+                snake.y = snakePosition.y;
+                break;
+            case MOVE_LEFT:
+                snake.x = snakePosition.x - SNAKE_SIZE;
+                snake.y = snakePosition.y;
+                break;
+            case MOVE_UP:
+                snake.x = snakePosition.x;
+                snake.y = snakePosition.y + SNAKE_SIZE;
+                break;
+            case MOVE_DOWN:
+                snake.x = snakePosition.x;
+                snake.y = snakePosition.y - SNAKE_SIZE;
+                break;
+
+        }
+        snake.width = SNAKE_SIZE;
+        snake.height = SNAKE_SIZE;
+        snakes.add(0, snake);
+        snakes.remove(snakeLength + 1);
     }
 
 	@Override
@@ -103,7 +122,7 @@ public class GameScreen implements Screen {
 		// begin a new batch and draw the bucket and
 		// all drops
 		game.batch.begin();
-		game.font.draw(game.batch, "Pellets Collected: " + pelletsGathered, 0, 480);
+		game.font.draw(game.batch, "Pellets Collected: " + pelletsGathered, 0, WINDOW_HEIGHT);
 		game.batch.draw(pelletImage, pellet.x, pellet.y);
 		for (Rectangle snake : snakes) {
 			game.batch.draw(snakeImage, snake.x, snake.y);
@@ -112,13 +131,13 @@ public class GameScreen implements Screen {
 
 		// process user input
 		if (Gdx.input.isKeyPressed(Keys.LEFT))
-			snakes[0].x -= 200 * Gdx.graphics.getDeltaTime();
+            moveSnake(MOVE_LEFT);
 		if (Gdx.input.isKeyPressed(Keys.RIGHT))
-			snakes[0].x += 200 * Gdx.graphics.getDeltaTime();
+            moveSnake(MOVE_RIGHT);
         if (Gdx.input.isKeyPressed(Keys.UP))
-            snakes[0].y += 200 * Gdx.graphics.getDeltaTime();
+            moveSnake(MOVE_UP);
         if (Gdx.input.isKeyPressed(Keys.DOWN))
-            snakes[0].y -= 200 * Gdx.graphics.getDeltaTime();
+            moveSnake(MOVE_DOWN);
 
 		// make sure the bucket stays within the screen bounds
 		//if (snake.x < 0)
@@ -151,7 +170,7 @@ public class GameScreen implements Screen {
 	public void show() {
 		// start the playback of the background music
 		// when the screen is shown
-		rainMusic.play();
+		//rainMusic.play();
 	}
 
 	@Override
@@ -168,10 +187,10 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void dispose() {
-		dropImage.dispose();
-		bucketImage.dispose();
-		dropSound.dispose();
-		rainMusic.dispose();
+		snakeImage.dispose();
+		pelletImage.dispose();
+		//dropSound.dispose();
+		//rainMusic.dispose();
 	}
 
 }
