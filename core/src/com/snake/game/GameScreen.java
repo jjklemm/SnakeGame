@@ -1,5 +1,6 @@
 package com.snake.game;
 
+import java.util.*;
 import java.util.Iterator;
 
 import com.badlogic.gdx.Gdx;
@@ -26,11 +27,13 @@ public class GameScreen implements Screen {
 	//Music rainMusic;
 	OrthographicCamera camera;
 	Rectangle pellet;
+    ArrayList<Rectangle> snakes = new ArrayList<>();
 	int pelletsGathered;
     int snakeLength;
+    int lastMove;
 
-    final int PELLET_SIZE = 4;
-    final int SNAKE_SIZE = 4;
+    final int PELLET_SIZE = 8;
+    final int SNAKE_SIZE = 8;
     final int WINDOW_LENGTH = 800;
     final int WINDOW_HEIGHT = 480;
     final int SNAKE_SPEED = 200;
@@ -58,13 +61,13 @@ public class GameScreen implements Screen {
 		// create a Rectangle to logically represent the pellet 
 		pellet = new Rectangle();
 		pellet.x = MathUtils.random(0,WINDOW_LENGTH - PELLET_SIZE); // center the bucket horizontally
-		pellet.y = MathUtils.random(0,WINDOW_HEIGHT - PELLET_SIZE; // bottom left corner of the bucket is 20 pixels above
+		pellet.y = MathUtils.random(0,WINDOW_HEIGHT - PELLET_SIZE); // bottom left corner of the bucket is 20 pixels above
 						// the bottom screen edge
 		pellet.width = PELLET_SIZE;
 		pellet.height = PELLET_SIZE;
 
 		// Create first snake pixel
-		ArrayList<Rectangle> snakes = new ArrayList<>();
+		//ArrayList<Rectangle> snakes = new ArrayList<>();
         Rectangle snake = new Rectangle();
         snake.x = WINDOW_LENGTH / 2;
         snake.y = WINDOW_HEIGHT / 2;
@@ -101,8 +104,14 @@ public class GameScreen implements Screen {
         snake.width = SNAKE_SIZE;
         snake.height = SNAKE_SIZE;
         snakes.add(0, snake);
-        snakes.remove(snakeLength + 1);
+        snakes.remove(snakeLength);
     }
+
+    //private void checkOverlap(int move) {
+        // check if snake overlaps pellet
+        // if overlap, add pixel to snake and generate new pellet
+        
+    //}
 
 	@Override
 	public void render(float delta) {
@@ -119,8 +128,7 @@ public class GameScreen implements Screen {
 		// coordinate system specified by the camera.
 		game.batch.setProjectionMatrix(camera.combined);
 
-		// begin a new batch and draw the bucket and
-		// all drops
+		// render snake and pellet 
 		game.batch.begin();
 		game.font.draw(game.batch, "Pellets Collected: " + pelletsGathered, 0, WINDOW_HEIGHT);
 		game.batch.draw(pelletImage, pellet.x, pellet.y);
@@ -130,36 +138,31 @@ public class GameScreen implements Screen {
 		game.batch.end();
 
 		// process user input
-		if (Gdx.input.isKeyPressed(Keys.LEFT))
+		if (Gdx.input.isKeyPressed(Keys.LEFT)) {
+            lastMove = MOVE_LEFT;
             moveSnake(MOVE_LEFT);
-		if (Gdx.input.isKeyPressed(Keys.RIGHT))
+        }
+		if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
+            lastMove = MOVE_RIGHT;
             moveSnake(MOVE_RIGHT);
-        if (Gdx.input.isKeyPressed(Keys.UP))
+        }
+        if (Gdx.input.isKeyPressed(Keys.UP)) {
+            lastMove = MOVE_UP;
             moveSnake(MOVE_UP);
-        if (Gdx.input.isKeyPressed(Keys.DOWN))
+        }
+        if (Gdx.input.isKeyPressed(Keys.DOWN)) {
+            lastMove = MOVE_DOWN;
             moveSnake(MOVE_DOWN);
+        }
 
-		// make sure the bucket stays within the screen bounds
+        // moveSnake outside of ifs to keep snake always in motion
+
+        // check if snake overlaps pellet
+
+		// make sure the snake stays within the screen bounds
 		//if (snake.x < 0)
 		//	snake.x = 0;
-		//if (snake.x > 800 - 64)
-		//	bucket.x = 800 - 64;
 
-		// move the raindrops, remove any that are beneath the bottom edge of
-		// the screen or that hit the bucket. In the later case we play back
-		// a sound effect as well.
-		Iterator<Rectangle> iter = raindrops.iterator();
-		while (iter.hasNext()) {
-			Rectangle raindrop = iter.next();
-			raindrop.y -= 200 * Gdx.graphics.getDeltaTime();
-			if (raindrop.y + 64 < 0)
-				iter.remove();
-			if (raindrop.overlaps(bucket)) {
-				dropsGathered++;
-				dropSound.play();
-				iter.remove();
-			}
-		}
 	}
 
 	@Override
