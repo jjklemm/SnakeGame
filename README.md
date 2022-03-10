@@ -1,5 +1,7 @@
 # SnakeGame
 
+## Overview
+
 This is the simple snake game that you are probably familiar with. Move the snake around the screen, collect pellets, and don't run into other parts of the snake
 or the edges of the screen.
 
@@ -13,4 +15,11 @@ Clone the repo locally and from the top level directory, run
 ./gradlew desktop:run
 ```
 
-Feel free to get in touch with comments/suggestions via [email](mailto:jarkle00@outlook.com).
+The game can also be run in a web browser by running
+```
+./gradlew html:superDev
+```
+
+## Miscellaneous
+
+Feel free to get in touch via [email](mailto:jarkle00@outlook.com) with comments/suggestions or to collaborate.
