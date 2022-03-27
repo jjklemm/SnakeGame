@@ -10,7 +10,7 @@ so check that out if you're interested.
 
 ## Running the game
 
-You will need Java 8+ and Gradle to build the project.
+You will need Java 11+ and Gradle to build the project.
 
 Clone the repo locally and from the top level directory, run
 ```
